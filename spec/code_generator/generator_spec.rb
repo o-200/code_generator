@@ -89,14 +89,11 @@ RSpec.describe CodeGenerator::Generator do
             end
 
             context "when params are passed for specific method" do
-              before do
-                code.generate_code
-              end
               let(:code) do
                 described_class.new(public_methods: [:method1, ["method2", { should_return: Integer, generate: true }]])
               end
 
-              it "returns nil and random Integer", :skip_generation do
+              it "returns nil and random Integer" do
                 expect(code.method1).to eq nil
                 expect(code.method2).to be_an Integer
               end
