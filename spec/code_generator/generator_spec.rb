@@ -65,7 +65,6 @@ RSpec.describe CodeGenerator::Generator do
           let(:code) { described_class.new(public_methods: [[11, { should_return: 123 }]]) }
 
           it "raise error", :skip_generation do
-            # .with("Method name should be Symbol or String, but #{some_value.class} was passed.")
             expect do
               code.generate_code
             end.to raise_error(ArgumentError)
