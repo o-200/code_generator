@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require "rspec"
-require_relative "../../lib/code_generator/generator"
-
 RSpec.describe CodeGenerator::Generator do
   describe "#generate_code" do
     context "public_methods" do
