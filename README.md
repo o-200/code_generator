@@ -89,7 +89,34 @@ gem install code_generator
 
 ## Usage
 
-All docs are available at the separate page: https://unurgunite.github.io/code_generator_docs/
+All internal docs are available at the separate page: https://unurgunite.github.io/code_generator_docs/
+
+This gem is really simple to use. It generates methods according to your requests. It uses standard Ruby parameters
+names for representing them as separate objects:
+
+1. `req` is a required param
+2. `opt` is an optional param
+3. `keyreq` is a required keyword param
+4. `key` is a keyword param with default value
+5. `block` is block
+
+```ruby
+code = CodeGenerator::Generator.new(public_methods: [:method1, [:method2, { args: [[:req, :foo],
+                                                                                   [:req, :bar],
+                                                                                   [:opt, :opts, {}],
+                                                                                   [:keyreq, :some_keyword],
+                                                                                   [:key, :some_key, 123],
+                                                                                   [:block, :some_block]],
+                                                                            should_return: 123 }], :method3], should_return: Integer, generate: true)
+code.generate_code #=> [:method1, [:method2, {:args=>[[:req, :foo], [:req, :bar], [:opt, :opts, {}], [:keyreq, :some_keyword], [:key, :some_key, 123], [:block, :some_block]], :should_return=>123}], :method3]
+code.methods(false) #=> [:method1, :method2, :method3]
+code.method1 #=> 724835356767704
+code.method2(1, { foo: 555 }, some_keyword: 345) #=> 123
+code.method3 #=> 724835356767704 # random objects will be fixed in next release
+
+code.method(:method2) #=> #<Method: #<CodeGenerator::Generator:0x000055b27b207758 @public_methods=[:method1, [:method2, {:args=>[[:req, :foo], [:req, :bar], [:opt, :opts, {}], [:keyreq, :some_keyword], [:key, :some_key, 123], [:block, :some_block]], :should_return=>123}], :method3], @public_class_methods=nil, @private_methods=nil, @private_class_methods=nil, @should_return=Integer, @generate=true>.method2(foo, bar, opts=..., some_keyword:, some_key: ..., &some_block) /home/ruby/code_generator/lib/code_generator/generator.rb:99>
+code.method(:method2).parameters # => [[:req, :foo], [:req, :bar], [:opt, :opts], [:keyreq, :some_keyword], [:key, :some_key], [:block, :some_block]]
+```
 
 ## TODO
 
