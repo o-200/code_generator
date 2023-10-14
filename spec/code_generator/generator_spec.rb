@@ -11,8 +11,6 @@ RSpec.describe CodeGenerator::Generator do
       end
 
       context "when Symbol is passed" do
-        before { code.generate_code }
-
         let(:code) { described_class.new(public_methods: :method1) }
 
         it "returns method" do
@@ -29,8 +27,6 @@ RSpec.describe CodeGenerator::Generator do
       end
 
       context "when String is passed" do
-        before { code.generate_code }
-
         let(:code) { described_class.new(public_methods: "method1") }
 
         it "returns a method" do
@@ -47,8 +43,6 @@ RSpec.describe CodeGenerator::Generator do
       end
 
       context "when Integer is passed" do
-        before { code.generate_code }
-
         let(:code) { described_class.new(public_methods: 2) }
 
         it "returns two methods" do
@@ -110,8 +104,6 @@ RSpec.describe CodeGenerator::Generator do
             end
 
             context "when params are passed in global scope" do
-              before { code.generate_code }
-
               let(:code) do
                 described_class.new(public_methods: [:method1, ["method2", { should_return: Integer, generate: true }]],
                                     should_return: String, generate: true)
@@ -125,57 +117,57 @@ RSpec.describe CodeGenerator::Generator do
           end
         end
 
-        # context "when `should_return` passed" do
-        #   context "when instance is passed" do
-        #     let(:m1_value) { 123 }
-        #     let(:m2_value) { Integer }
-        #     let(:code) do
-        #       described_class.new(public_methods: [[:method1, { should_return: m1_value }],
-        #                                            [:method2, { should_return: m2_value }]])
-        #     end
-        #
-        #     it "returns passed object" do
-        #       expect(code.method1).to eq(m1_value)
-        #       expect(code.method2).to eq(m2_value)
-        #     end
-        #   end
-        # end
-        #
-        # context "when `generate` passed" do
-        #   context "when it was passed in correct way" do
-        #     subject(:code) do
-        #       described_class.new(public_methods: [[:method1, { should_return: klass, generate: true }],
-        #                                            [:method2, { should_return: klass, generate: true }]])
-        #     end
-        #
-        #     context "when integer passed" do
-        #       let(:klass) { Integer }
-        #
-        #       it "returns random integer" do
-        #         expect(code.method1).to be_an Integer
-        #         expect(code.method2).to be_an Integer
-        #       end
-        #     end
-        #
-        #     context "when string passed" do
-        #       let(:klass) { String }
-        #
-        #       it "returns random string" do
-        #         expect(code.method1).to be_a String
-        #         expect(code.method2).to be_a String
-        #       end
-        #     end
-        #
-        #     context "when symbol is passed" do
-        #       let(:klass) { Symbol }
-        #
-        #       it "returns random symbol" do
-        #         expect(code.method1).to be_a Symbol
-        #         expect(code.method2).to be_a Symbol
-        #       end
-        #     end
-        #   end
-        # end
+        context "when `should_return` passed" do
+          context "when instance is passed" do
+            let(:m1_value) { 123 }
+            let(:m2_value) { Integer }
+            let(:code) do
+              described_class.new(public_methods: [[:method1, { should_return: m1_value }],
+                                                   [:method2, { should_return: m2_value }]])
+            end
+
+            it "returns passed object" do
+              expect(code.method1).to eq(m1_value)
+              expect(code.method2).to eq(m2_value)
+            end
+          end
+        end
+
+        context "when `generate` passed" do
+          context "when it was passed in correct way" do
+            subject(:code) do
+              described_class.new(public_methods: [[:method1, { should_return: klass, generate: true }],
+                                                   [:method2, { should_return: klass, generate: true }]])
+            end
+
+            context "when integer passed" do
+              let(:klass) { Integer }
+
+              it "returns random integer" do
+                expect(code.method1).to be_an Integer
+                expect(code.method2).to be_an Integer
+              end
+            end
+
+            context "when string passed" do
+              let(:klass) { String }
+
+              it "returns random string" do
+                expect(code.method1).to be_a String
+                expect(code.method2).to be_a String
+              end
+            end
+
+            context "when symbol is passed" do
+              let(:klass) { Symbol }
+
+              it "returns random symbol" do
+                expect(code.method1).to be_a Symbol
+                expect(code.method2).to be_a Symbol
+              end
+            end
+          end
+        end
       end
 
       context "when passed anything else" do
