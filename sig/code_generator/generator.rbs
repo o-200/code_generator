@@ -1,0 +1,14 @@
+module CodeGenerator
+  module Generator
+    type paramType = Integer | Symbol | String | Array[String | Symbol | paramType]
+
+    PARAMS_TYPES: Array[Symbol]
+
+    def initialize: (?public_methods: paramType?, public_class_methods: paramType?, private_methods: paramType?, private_class_methods: paramType?) -> void
+
+    @public_methods: Integer | Array[Symbol | String | Array[untyped]] | nil
+    @public_class_methods: Integer | Array[Symbol | String] | nil
+    @private_methods: Integer | Array[Symbol | String] | nil
+    @private_class_methods: Integer | Array[Symbol | String] | nil
+  end
+end
