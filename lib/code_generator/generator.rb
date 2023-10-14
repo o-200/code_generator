@@ -14,10 +14,10 @@ module CodeGenerator # :nodoc:
     # @example
     #   # By passing array of Symbols or Strings
     #   code = CodeGenerator.new(public_methods: %i[method1 method2])
-    #   code.instance_methods(false) #=> [:method1, :method2]
+    #   code.methods(false) #=> [:method1, :method2]
     #   # By passing number of methods
     #   code = CodeGenerator.new(public_methods: 3)
-    #   code.instance_methods(false) #=> [:method1, :method2, :method3]
+    #   code.methods(false) #=> [:method1, :method2, :method3]
     # If you want to pass arguments, you can pass it according the following signature. Note that only +:opt+ and +:key+
     # variables can be predefined (by default they would be nil), also +:block+ variable could be presented only once for
     # each method:
