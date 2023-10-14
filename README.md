@@ -125,8 +125,8 @@ For the development purposes `code_generator` gem uses:
 | [RSpec][201]         | The RSpec gem is used for test which are located in a separate folder under `spec` name. |
 | [RuboCop][202]       | The RuboCop gem is used for code formatting.                                             |
 | [Rake][203]          | The Rake gem is used for building tasks as generating documentation.                     |
-| [rubocop-rspec][205] | The rubocop-rspec gem is used for formatting specs.                                      |
-| [YARD][206]          | The YARD gem is used for the documentation.                                              |
+| [rubocop-rspec][204] | The rubocop-rspec gem is used for formatting specs.                                      |
+| [YARD][205]          | The YARD gem is used for the documentation.                                              |
 
 ## Project style guide
 
@@ -154,7 +154,8 @@ faster the PR will be checked.
 
 ## Code of Conduct
 
-Everyone interacting in the `CodeGenerator` project's codebases, issue trackers, chat rooms and mailing lists is expected
+Everyone interacting in the `CodeGenerator` project's codebases, issue trackers, chat rooms and mailing lists is
+expected
 to follow the [code of conduct](https://github.com/unurgunite/code_generator/blob/master/CODE_OF_CONDUCT.md).
 
 ## License
@@ -214,3 +215,7 @@ the [New BSD License](https://opensource.org/licenses/BSD-3-Clause)
 [202]:https://rubygems.org/gems/rubocop
 
 [203]:https://rubygems.org/gems/rake
+
+[204]:https://rubygems.org/gems/rubocop-rspec
+
+[205]:https://rubygems.org/gems/yard
