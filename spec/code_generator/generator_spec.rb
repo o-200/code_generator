@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "../support/shared_examples/acts_as_public_methods_spec"
+
 RSpec.describe CodeGenerator::Generator do
   describe "#generate_code" do
     context "public_methods" do
@@ -133,7 +135,7 @@ RSpec.describe CodeGenerator::Generator do
                                                    [:method2, { should_return: klass, generate: true }]])
             end
 
-            context "when integer passed" do
+            context "when Integer passed" do
               let(:klass) { Integer }
 
               it "returns random integer" do
@@ -142,7 +144,7 @@ RSpec.describe CodeGenerator::Generator do
               end
             end
 
-            context "when string passed" do
+            context "when String passed" do
               let(:klass) { String }
 
               it "returns random string" do
@@ -151,12 +153,21 @@ RSpec.describe CodeGenerator::Generator do
               end
             end
 
-            context "when symbol is passed" do
+            context "when Symbol passed" do
               let(:klass) { Symbol }
 
               it "returns random symbol" do
                 expect(code.method1).to be_a Symbol
                 expect(code.method2).to be_a Symbol
+              end
+            end
+
+            context "when unsupported class passed" do
+              let(:klass) { Object }
+
+              it "returns passed class" do
+                expect(code.method1).to eq klass
+                expect(code.method2).to eq klass
               end
             end
           end
@@ -172,6 +183,92 @@ RSpec.describe CodeGenerator::Generator do
           expect { code.generate_code }.to raise_error(ArgumentError)
         end
       end
+
+      context "when passed arguments to methods" do
+        subject(:code) { described_class.new(public_methods: [[:method1, { args: args }]]) }
+
+        context "when required arguments passed" do
+          let(:args) { [[:req, :foo]] }
+
+          it do
+            expect(code.method(:method1).parameters).to eq args
+          end
+
+          context 'when args were passed incorrectly' do
+            let(:args) { [[:req, :foo, 123]] }
+
+            it '', :skip_generation do
+              expect { code.generate_code }.to raise_error ArgumentError
+            end
+          end
+        end
+
+        context "when optional arguments passed" do
+          let(:args) { [[:opt, :opts, {}]] }
+
+          it do
+            expect(code.method(:method1).parameters).to eq [[:opt, :opts]]
+          end
+
+          context 'when args were passed incorrectly' do
+            let(:args) { [[:opt, :opts]] }
+
+            it '', :skip_generation do
+              expect { code.generate_code }.to raise_error ArgumentError
+            end
+          end
+        end
+
+        context "when required keyword arguments passed" do
+          let(:args) { [[:keyreq, :some_keyword]] }
+
+          it { expect(code.method(:method1).parameters).to eq args }
+
+          context 'when args were passed incorrectly' do
+            let(:args) { [[:keyreq, :some_keyword, 123]] }
+
+            it '', :skip_generation do
+              expect { code.generate_code }.to raise_error ArgumentError
+            end
+          end
+        end
+
+        context "when keyword arguments passed" do
+          let(:args) { [[:key, :some_key, 123]] }
+
+          it { expect(code.method(:method1).parameters).to eq [[:key, :some_key]] }
+
+          context 'when args were passed incorrectly' do
+            let(:args) { [[:key, :some_key]] }
+
+            it '', :skip_generation do
+              expect { code.generate_code }.to raise_error ArgumentError
+            end
+          end
+        end
+
+        context "when block argument passed" do
+          let(:args) { [[:block, :some_block]] }
+
+          it { expect(code.method(:method1).parameters).to eq args }
+
+          context 'when args were passed incorrectly' do
+            let(:args) { [[:block, :some_block, 123]] }
+
+            it '', :skip_generation do
+              expect { code.generate_code }.to raise_error ArgumentError
+            end
+          end
+        end
+      end
     end
   end
 end
+
+# code = CodeGenerator.new(public_methods: [:method1, [:method2, { args: [[:req, :foo],
+#                                                                         [:req, :bar],
+#                                                                         [:opt, :opts, {}],
+#                                                                         [:keyreq, :some_keyword],
+#                                                                         [:key, :some_key, 123],
+#                                                                         [:block, :some_block]],
+#                                                                  should_return: 123 }], :method3])
