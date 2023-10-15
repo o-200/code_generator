@@ -39,7 +39,10 @@ module CodeGenerator # :nodoc:
     #   # By passing class (not all classes are supported)
     #   code = CodeGenerator.new(public_methods: [[:method1, { should_return: Integer, generate: true }])
     #   code.method1 #=> some random Integer
-    def initialize(public_methods: nil, public_class_methods: nil, private_methods: nil, private_class_methods: nil, should_return: nil, generate: false)
+    #
+    # @param [Integer|String|Symbol|Array<String|Symbol|Hash<Symbol, Class|Boolean>>] public_methods
+    def initialize(public_methods: nil, public_class_methods: nil, private_methods: nil, private_class_methods: nil,
+                   should_return: nil, generate: false)
       @public_methods = public_methods
       @public_class_methods = public_class_methods
       @private_methods = private_methods
@@ -48,11 +51,21 @@ module CodeGenerator # :nodoc:
       @generate = generate
     end
 
+    # +CodeGenerator::Generator#generate_code+                 -> value
+    #
+    #
     def generate_code
+      generate_public_methods
+      generate_public_class_methods
+    end
+
+    private
+
+    def generate_public_methods
       case @public_methods
       when String, Symbol
         # code = CodeGenerator.new(public_methods: :method1, should_return: 123, generate: true)
-        return define_singleton_method(@public_methods) {} if !@should_return || !@generate
+        return define_singleton_method(@public_methods) {} unless any_generation_rules
 
         object_to_return = operate_on_value(@should_return, @generate)
         define_singleton_method(@public_methods) { object_to_return }
@@ -72,9 +85,9 @@ module CodeGenerator # :nodoc:
 
         @public_methods.each do |m|
           if m.instance_of?(Symbol) || m.instance_of?(String)
-            if !@should_return && !@generate
+            if !both_generation_rules
               define_singleton_method(m) {}
-            elsif @should_return || @generate
+            elsif any_generation_rules
               object_to_return = operate_on_value(@should_return, @generate)
               define_singleton_method(m) do
                 object_to_return
@@ -84,7 +97,7 @@ module CodeGenerator # :nodoc:
             unless (m_name = m.first).instance_of?(Symbol) || m_name.instance_of?(String)
               raise ArgumentError, "Method name should be Symbol or String, but #{m_name.class} was passed."
             end
-            unless (opts = m.last).is_a?(Hash) #&& (arguments = opts[:args]).is_a?(Array)
+            unless (opts = m.last).is_a?(Hash) # && (arguments = opts[:args]).is_a?(Array)
               raise ArgumentError, "Method arguments should behave as Hash, but #{m_name.class} was passed."
             end
 
@@ -104,7 +117,68 @@ module CodeGenerator # :nodoc:
       end
     end
 
-    private
+    def generate_public_class_methods
+      case @public_class_methods
+      when String, Symbol
+        return self.class.define_singleton_method(@public_class_methods) {} unless any_generation_rules
+
+        object_to_return = operate_on_value(@should_return, @generate)
+        self.class.define_singleton_method(@public_class_methods) { object_to_return }
+      when Integer
+        # code = CodeGenerator.new(public_class_methods: 1, should_return: 123, generate: true)
+        return if @public_class_methods.negative? || @public_class_methods.zero?
+
+        object_to_return = operate_on_value(@should_return, @generate)
+
+        1.upto(@public_class_methods) do |time|
+          self.class.define_singleton_method("method#{time}") do
+            object_to_return
+          end
+        end
+      when Array
+        return if @public_class_methods.empty?
+
+        @public_class_methods.each do |m|
+          if m.instance_of?(Symbol) || m.instance_of?(String)
+            if !both_generation_rules
+              self.class.define_singleton_method(m) {}
+            elsif any_generation_rules
+              object_to_return = operate_on_value(@should_return, @generate)
+              self.class.define_singleton_method(m) do
+                object_to_return
+              end
+            end
+          elsif m.instance_of?(Array)
+            unless (m_name = m.first).instance_of?(Symbol) || m_name.instance_of?(String)
+              raise ArgumentError, "Method name should be Symbol or String, but #{m_name.class} was passed."
+            end
+            unless (opts = m.last).is_a?(Hash) # && (arguments = opts[:args]).is_a?(Array)
+              raise ArgumentError, "Method arguments should behave as Hash, but #{m_name.class} was passed."
+            end
+
+            arguments = opts[:args] ? arguments_parser(opts[:args]) : nil
+            object_to_return = operate_on_value(opts[:should_return], opts[:generate]).inspect
+            class_eval <<-METHOD, __FILE__, __LINE__ + 1
+              def #{m_name}(#{arguments})
+                #{object_to_return}
+              end
+            METHOD
+          end
+        end
+      when NilClass
+        nil
+      else
+        raise ArgumentError, "public_methods is #{@public_class_methods.class} but expected Array[Symbol|String] or Integer."
+      end
+    end
+
+    def any_generation_rules
+      @should_return || @generate
+    end
+
+    def both_generation_rules
+      @should_return && @generate
+    end
 
     def operate_on_value(should_return, generate)
       random_object = if generate && should_return.instance_of?(Class)
@@ -126,8 +200,6 @@ module CodeGenerator # :nodoc:
         SecureRandom.alphanumeric(10)
       when "Symbol"
         SecureRandom.alphanumeric(10).to_sym
-      else
-        "Unsupported class #{klass}"
       end
     end
 
