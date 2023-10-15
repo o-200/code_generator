@@ -5,6 +5,6 @@ module CodeGenerator
   # Your code goes here...
 end
 
-require_relative 'extensions/extensions'
+require_relative "extensions/extensions"
 require_relative "code_generator/version"
-require_relative 'code_generator/generator'
+require_relative "code_generator/generator"

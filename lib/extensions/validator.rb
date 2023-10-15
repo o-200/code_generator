@@ -31,6 +31,7 @@ class Validator
     arr << validate_keyreq if counts[:keyreq].positive?
     arr << validate_key if counts[:key].positive?
     arr << validate_block if counts[:block].positive?
+    arr
   end
 
   def validate_req
@@ -47,7 +48,7 @@ class Validator
     end
 
     str = opts.each_with_object("") do |opt, obj|
-      obj << "#{opt[1]}=#{opt.last}#{',' if @o_size ||= opts.size == 1}"
+      obj << "#{opt[1]}=#{opt.last}#{"," if @o_size ||= opts.size == 1}"
     end
     @o_size ? str.chop : str
   end
@@ -66,7 +67,7 @@ class Validator
     end
 
     str = keys.each_with_object("") do |key, obj|
-      obj << "#{key[1]}: #{key.last}#{',' if @k_size ||= keys.size == 1 }"
+      obj << "#{key[1]}: #{key.last}#{"," if @k_size ||= keys.size == 1}"
     end
     @k_size ? str.chop : str
   end
