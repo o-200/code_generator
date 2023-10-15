@@ -26,8 +26,8 @@ purposes and does not need any requirements.
 
 ## Overview
 
-As noted above, this gem . The projects source tree is pretty simple. All of the
-resources are stored in theirs separate module, so it does code readability much cleaner.
+As noted above, this gem helps to create large domains of data (objects and their interfaces). The projects source tree
+is pretty simple. All of the resources are stored in theirs separate module, so it does code readability much cleaner.
 
 ## Installation
 
