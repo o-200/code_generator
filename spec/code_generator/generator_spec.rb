@@ -194,10 +194,10 @@ RSpec.describe CodeGenerator::Generator do
             expect(code.method(:method1).parameters).to eq args
           end
 
-          context 'when args were passed incorrectly' do
+          context "when args were passed incorrectly" do
             let(:args) { [[:req, :foo, 123]] }
 
-            it '', :skip_generation do
+            it "", :skip_generation do
               expect { code.generate_code }.to raise_error ArgumentError
             end
           end
@@ -207,13 +207,13 @@ RSpec.describe CodeGenerator::Generator do
           let(:args) { [[:opt, :opts, {}]] }
 
           it do
-            expect(code.method(:method1).parameters).to eq [[:opt, :opts]]
+            expect(code.method(:method1).parameters).to eq [%i[opt opts]]
           end
 
-          context 'when args were passed incorrectly' do
+          context "when args were passed incorrectly" do
             let(:args) { [[:opt, :opts]] }
 
-            it '', :skip_generation do
+            it "", :skip_generation do
               expect { code.generate_code }.to raise_error ArgumentError
             end
           end
@@ -224,10 +224,10 @@ RSpec.describe CodeGenerator::Generator do
 
           it { expect(code.method(:method1).parameters).to eq args }
 
-          context 'when args were passed incorrectly' do
+          context "when args were passed incorrectly" do
             let(:args) { [[:keyreq, :some_keyword, 123]] }
 
-            it '', :skip_generation do
+            it "", :skip_generation do
               expect { code.generate_code }.to raise_error ArgumentError
             end
           end
@@ -236,12 +236,12 @@ RSpec.describe CodeGenerator::Generator do
         context "when keyword arguments passed" do
           let(:args) { [[:key, :some_key, 123]] }
 
-          it { expect(code.method(:method1).parameters).to eq [[:key, :some_key]] }
+          it { expect(code.method(:method1).parameters).to eq [%i[key some_key]] }
 
-          context 'when args were passed incorrectly' do
+          context "when args were passed incorrectly" do
             let(:args) { [[:key, :some_key]] }
 
-            it '', :skip_generation do
+            it "", :skip_generation do
               expect { code.generate_code }.to raise_error ArgumentError
             end
           end
@@ -252,10 +252,17 @@ RSpec.describe CodeGenerator::Generator do
 
           it { expect(code.method(:method1).parameters).to eq args }
 
-          context 'when args were passed incorrectly' do
+          context "when args were passed incorrectly" do
             let(:args) { [[:block, :some_block, 123]] }
 
-            it '', :skip_generation do
+            it "", :skip_generation do
+              expect { code.generate_code }.to raise_error ArgumentError
+            end
+          end
+
+          context "when there is more than one block" do
+            let(:args) { [[:block, :foo_block], [[:block, :bar_block]]] }
+            it "", :skip_generation do
               expect { code.generate_code }.to raise_error ArgumentError
             end
           end
@@ -264,11 +271,3 @@ RSpec.describe CodeGenerator::Generator do
     end
   end
 end
-
-# code = CodeGenerator.new(public_methods: [:method1, [:method2, { args: [[:req, :foo],
-#                                                                         [:req, :bar],
-#                                                                         [:opt, :opts, {}],
-#                                                                         [:keyreq, :some_keyword],
-#                                                                         [:key, :some_key, 123],
-#                                                                         [:block, :some_block]],
-#                                                                  should_return: 123 }], :method3])

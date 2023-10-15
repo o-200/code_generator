@@ -73,7 +73,7 @@ class Validator
   end
 
   def validate_block
-    if (block = @arguments.select { _1.first == :block }).any? { _1.size > 2 }
+    if (block = @arguments.select { _1.first == :block }).any? { _1.size > 2 } || block.size > 1
       raise ArgumentError, messages[:block]
     end
 
