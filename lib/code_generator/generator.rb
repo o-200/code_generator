@@ -1,16 +1,14 @@
 # frozen_string_literal: true
 
-require "securerandom"
-
 module CodeGenerator # :nodoc:
   class Generator # :nodoc:
     PARAMS_TYPES = %i[req opt keyreq key block].freeze
 
     # +CodeGenerator::Generator#new+                 -> CodeGenerator::Generator
     #
-    # This object constructor helps to easily create class with stubbed methods (with support of public, public singleton,
-    # private and private singleton methods and their params). For e.g., we want to create a class which have several
-    # public methods:
+    # This object constructor helps to easily create class with stubbed methods (with support of public, public
+    # singleton, private and private singleton methods and their params). For e.g., we want to create a class which
+    # has several public methods:
     # @example
     #   # By passing array of Symbols or Strings
     #   code = CodeGenerator.new(public_methods: %i[method1 method2])

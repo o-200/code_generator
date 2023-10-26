@@ -1,14 +1,36 @@
 module CodeGenerator
-  module Generator
-    type paramType = Integer | Symbol | String | Array[String | Symbol | paramType]
+  class Generator
+    type req = [Symbol, Symbol]
+    type opt = [Symbol, Symbol, untyped]
+    type keyreq = [Symbol, Symbol]
+    type key = [Symbol, Symbol, untyped]
+    type block = [Symbol, Symbol]
+    type methods_options = {
+        args: [req | opt | keyreq | key | block],
+        should_return: Integer,
+        generate: boolish
+      }
+    type primitives = Integer | Symbol | String
+    type paramType = primitives | [primitives, methods_options]
 
-    PARAMS_TYPES: Array[Symbol]
+    PARAMS_TYPES: [Symbol]
 
-    def initialize: (?public_methods: paramType?, public_class_methods: paramType?, private_methods: paramType?, private_class_methods: paramType?) -> void
+    def initialize: (
+        ?public_methods: paramType?,
+        ?public_class_methods: paramType?,
+        ?private_methods: paramType?,
+        ?private_class_methods: paramType?,
+        ?should_return: primitives | nil,
+        ?generate: boolish
+      ) -> untyped
 
-    @public_methods: Integer | Array[Symbol | String | Array[untyped]] | nil
-    @public_class_methods: Integer | Array[Symbol | String] | nil
-    @private_methods: Integer | Array[Symbol | String] | nil
-    @private_class_methods: Integer | Array[Symbol | String] | nil
+    @public_methods: paramType?
+    @public_class_methods: paramType?
+    @private_methods: paramType?
+    @private_class_methods: paramType?
+    @should_return: untyped
+    @generate: boolish
+
+    def generate_code: -> untyped
   end
 end
