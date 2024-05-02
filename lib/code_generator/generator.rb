@@ -55,6 +55,7 @@ module CodeGenerator # :nodoc:
     def generate_code
       generate_public_methods
       generate_public_class_methods
+      generate_public_private_methods
     end
 
     private
@@ -167,6 +168,62 @@ module CodeGenerator # :nodoc:
         nil
       else
         raise ArgumentError, "public_methods is #{@public_class_methods.class} but expected Array[Symbol|String] or Integer."
+      end
+    end
+
+    def generate_public_private_methods
+      case @private_methods
+      when String, Symbol
+        # code = CodeGenerator::Generator.new(private_methods: :method1, should_return: 123, generate: true)
+        return define_singleton_method(@private_methods) {} unless any_generation_rules
+
+        object_to_return = operate_on_value(@should_return, @generate)
+        define_singleton_method(@private_methods) { object_to_return }
+      when Integer
+        # code = CodeGenerator::Generator.new (private_methods: 1, should_return: 123, generate: true)
+        return if @private_methods.negative? || @private_methods.zero?
+
+        object_to_return = operate_on_value(@should_return, @generate)
+
+        1.upto(@private_methods) do |time|
+          define_singleton_method("method#{time}") do
+            object_to_return
+          end
+        end
+      when Array
+        return if @private_methods.empty?
+
+        @private_methods.each do |m|
+          if m.instance_of?(Symbol) || m.instance_of?(String)
+            if !both_generation_rules
+              define_singleton_method(m) {}
+            elsif any_generation_rules
+              object_to_return = operate_on_value(@should_return, @generate)
+              define_singleton_method(m) do
+                object_to_return
+              end
+            end
+          elsif m.instance_of?(Array)
+            unless (m_name = m.first).instance_of?(Symbol) || m_name.instance_of?(String)
+              raise ArgumentError, "Method name should be Symbol or String, but #{m_name.class} was passed."
+            end
+            unless (opts = m.last).is_a?(Hash) # && (arguments = opts[:args]).is_a?(Array)
+              raise ArgumentError, "Method arguments should behave as Hash, but #{m_name.class} was passed."
+            end
+
+            arguments = opts[:args] ? arguments_parser(opts[:args]) : nil
+            object_to_return = operate_on_value(opts[:should_return], opts[:generate]).inspect
+            instance_eval <<-METHOD, __FILE__, __LINE__ + 1
+              def #{m_name}(#{arguments})
+                #{object_to_return}
+              end
+            METHOD
+          end
+        end
+      when NilClass
+        nil
+      else
+        raise ArgumentError, "public_methods is #{@private_methods.class} but expected Array[Symbol|String] or Integer."
       end
     end
 
