@@ -55,7 +55,7 @@ module CodeGenerator # :nodoc:
     def generate_code
       generate_public_methods
       generate_public_class_methods
-      generate_public_private_methods
+      generate_private_methods
     end
 
     private
@@ -171,7 +171,7 @@ module CodeGenerator # :nodoc:
       end
     end
 
-    def generate_public_private_methods
+    def generate_private_methods
       case @private_methods
       when String, Symbol
         # code = CodeGenerator::Generator.new(private_methods: :method1, should_return: 123, generate: true)
