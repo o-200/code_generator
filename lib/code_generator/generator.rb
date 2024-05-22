@@ -224,7 +224,7 @@ module CodeGenerator # :nodoc:
       when NilClass
         nil
       else
-        raise ArgumentError, "public_methods is #{@private_methods.class} but expected Array[Symbol|String] or Integer."
+        raise ArgumentError, "private_methods is #{@private_methods.class} but expected Array[Symbol|String] or Integer."
       end
     end
 
